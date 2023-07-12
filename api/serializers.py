@@ -42,4 +42,4 @@ class ElevatorRequestsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ElevatorRequests
-        exclude = ('created_at','updated_at')
+        fields = ['id','elevator', 'req_floor', 'to_floor', 'is_serviced']

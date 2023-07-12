@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.db.models import F,Func
+
 from api.serializers import ElevatorSerializer,ElevatorSystemSerializer,ElevatorRequestsSerializer,ElevatorSystemOnlySerializer
 from api.models import Elevator,ElevatorSystem,ElevatorRequests
 
@@ -95,40 +97,46 @@ class ElevatorSystemViewByPk(APIView):
     """
     View of Elevator System APIs by primary key
     """
-    queryset = ElevatorSystem.objects.all()
-    serializer_class = ElevatorSystemSerializer
+    queryset = Elevator.objects.all()
+    serializer_class = ElevatorSerializer
 
-    def get(self, request, system_name = None):
+    def get(self, request, elevator_system = None):
         try:
-            elevator_system = self.queryset.filter(system_name = system_name)
-            serializer = ElevatorSystemSerializer(elevator_system)
-            print(serializer.data,serializer)
+            elevator_system_q = self.queryset.filter(elevator_system = elevator_system)
+            serializer = ElevatorSerializer(elevator_system_q,many = True)
             return Response(serializer.data)
         except Exception as e:
             return Response({'error': "Elevator System doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
     
-    def post(self, request, system_name = None):
-        try:
-            elevator_system = self.get_object()
-            serializer = ElevatorRequestsSerializer(data = request.data)
-            req_floor = serializer.initial_data['req_floor']
-            to_floor = serializer.initial_data['to_floor']
+    def post(self, request, elevator_system = None):
+        
+        serializer = ElevatorRequestsSerializer(data = request.data)
+        
+        if serializer.is_valid():
+            req_floor = serializer.validated_data['req_floor']
+            to_floor = serializer.validated_data['to_floor']
             
-            # Query to get closest elevator 
-            closest_elevator = Elevator.objects.filter(elevator_system = elevator_system, is_operational = True).annotate(distance = Func(F('current_floor')-req_floor,function = 'ABS')).order_by('distance').first()
-            # If closest elevator is available
-            if closest_elevator is not None:
-                direction = (to_floor - req_floor) / abs(to_floor - req_floor)
-                closest_elevator.direction = direction
-                closest_elevator.current_floor = to_floor
-                closest_elevator.save()
-                serializer.initial_data['elevator'] = closest_elevator.id
-                if serializer.is_valid():
-                    elevator_request = serializer.save()
-                    context = ElevatorRequestsSerializer(elevator_request).data
-                    return Response(context)
-        except Exception as e:
-            return Response({'error': "Elevator System not found"}, status=status.HTTP_404_NOT_FOUND)
+        # Query to get closest elevator 
+        closest_elevator = Elevator.objects.filter(elevator_system = elevator_system, is_operational = True).annotate(distance = Func(F('current_floor')-req_floor,function = 'ABS')).order_by('distance').first()
+        # If closest elevator is available
+        if closest_elevator is not None:
+            difference = to_floor - req_floor
+            if difference>0:
+                direction = 'Upward'
+            elif difference<0:
+                direction = 'Downward'
+            else:
+                direction = 'STANDING STILL'
+
+            closest_elevator.direction = direction
+            closest_elevator.current_floor = to_floor
+            need_id = closest_elevator.id
+            closest_elevator.save()
+            serializer.initial_data['elevator'] = need_id
+            if serializer.is_valid():
+                elevator_request = serializer.save()
+                context = ElevatorRequestsSerializer(elevator_request).data
+                return Response(context)
 
 class ElevatorRequestsView(APIView):
     """
