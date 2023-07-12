@@ -6,7 +6,9 @@ from api.serializers import ElevatorSerializer,ElevatorSystemSerializer,Elevator
 from api.models import Elevator,ElevatorSystem,ElevatorRequests
 
 class RoutesView(APIView):
-
+    """
+    View which can shows all the routes
+    """
     
     routes = [
         'GET /',
@@ -23,7 +25,9 @@ class RoutesView(APIView):
     
 
 class ElevatorView(APIView):
-
+    """
+    Elevator APIs View
+    """
     
     serializer_class = ElevatorSerializer
 
@@ -39,7 +43,9 @@ class ElevatorView(APIView):
     
     
 class ElevatorViewByPk(APIView):
-
+    """
+    View of Elevator API by primaryy key
+    """
     queryset = Elevator.objects.all()
     serializer_class = ElevatorSerializer
 
@@ -70,8 +76,9 @@ class ElevatorViewByPk(APIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ElevatorSystemView(APIView):
-
-    
+    """
+    View of Elevator System APIs
+    """
     serializer_class = ElevatorSystemOnlySerializer
     
     def get(self, request):
@@ -85,7 +92,9 @@ class ElevatorSystemView(APIView):
     
     
 class ElevatorSystemViewByPk(APIView):
-
+    """
+    View of Elevator System APIs by primary key
+    """
     queryset = ElevatorSystem.objects.all()
     serializer_class = ElevatorSystemSerializer
 
@@ -122,7 +131,9 @@ class ElevatorSystemViewByPk(APIView):
             return Response({'error': "Elevator System not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class ElevatorRequestsView(APIView):
-
+    """
+    View of Elevator Request APIs
+    """
     queryset = ElevatorRequests.objects.all()
     serializer_class = ElevatorRequestsSerializer
 
@@ -138,7 +149,9 @@ class ElevatorRequestsView(APIView):
 
 
 class ElevatorRequestsViewByPk(APIView):
-
+    """
+    View of Elevator Request APIs by Primary key
+    """
     queryset = ElevatorRequests.objects.all()
     serializer_class = ElevatorRequestsSerializer
 

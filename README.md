@@ -6,7 +6,7 @@ This is an elevator management system designed to simulate the operation of mult
 
 - [Features](#features)
 - [Installation](#installation)
-- [How to Run](#How to Run)
+- [Run](#run)
 
 ## Features
 
@@ -35,7 +35,7 @@ This is an elevator management system designed to simulate the operation of mult
    ```shell
    pip install -r requirements.txt
 
-## How to Run
+## Run
 1. After this Navigate to the elevator_management folder
 
    ```shell

@@ -2,8 +2,6 @@ from rest_framework import serializers
 from api.models import Elevator,ElevatorSystem,ElevatorRequests
 
 class ElevatorSerializer(serializers.ModelSerializer):
-    """
-    """
     next_destination = serializers.SerializerMethodField()
     def get_next_destination(self,obj):
         return obj.current_floor
@@ -13,17 +11,13 @@ class ElevatorSerializer(serializers.ModelSerializer):
         exclude = ('created_at','updated_at')
 
 class ElevatorSystemOnlySerializer(serializers.ModelSerializer):
-    """
-    """
-    
     
     class Meta:
         model = ElevatorSystem
         exclude = ('created_at','updated_at')
 
 class ElevatorSystemSerializer(serializers.ModelSerializer):
-    """
-    """
+    
     elevators = serializers.SerializerMethodField()
     
     class Meta:
@@ -45,9 +39,7 @@ class ElevatorSystemSerializer(serializers.ModelSerializer):
 
 
 class ElevatorRequestsSerializer(serializers.ModelSerializer):
-    """
-    """
-
+    
     class Meta:
         model = ElevatorRequests
         exclude = ('created_at','updated_at')

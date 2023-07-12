@@ -3,7 +3,7 @@ from django.db import models
 
 class ElevatorSystem(models.Model):
     """
-    
+    Elevator System model with the given keys
     """
     system_name = models.CharField(max_length=100)
     no_of_floor = models.IntegerField(default=1)
@@ -17,6 +17,7 @@ class ElevatorSystem(models.Model):
 
 class Elevator(models.Model):
     """
+    Elevator will have a many-to-one mapping with Elevator System as an Elevator System can have many elevators
     """
 
     direction_choices =(('Upward', 'Upward'), ('Downward', 'Downward'), ('STANDING STILL', 'STANDING STILL'))
@@ -38,6 +39,7 @@ class Elevator(models.Model):
 
 class ElevatorRequests(models.Model):
     """
+    Elevator Requests will have a many-to-one mapping with Elevator as an Elevator can have many requests
     """
     elevator = models.ForeignKey('Elevator',on_delete=models.CASCADE)
     req_floor = models.IntegerField()
